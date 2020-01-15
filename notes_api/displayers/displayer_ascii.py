@@ -1,5 +1,6 @@
-from displayer import Displayer
 from colorama import Fore, Style
+
+from .displayer import Displayer
 
 class DisplayerAscii(Displayer):
     def display(self, note):

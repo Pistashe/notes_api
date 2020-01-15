@@ -1,6 +1,6 @@
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 
-from encrypter import Encrypter
+from .encrypter import Encrypter
 
 class EncrypterSymmetric(Encrypter):
 
@@ -15,5 +15,8 @@ class EncrypterSymmetric(Encrypter):
         with open(file_name, "rb") as file_:
             encrypted = file_.read()
 
-        decrypted = decrypter.decrypt(encrypted).decode()
+        try:
+            decrypted = decrypter.decrypt(encrypted).decode()
+        except InvalidToken:
+            raise KeyError("The key used to decrypt is not correct.")
         return decrypted

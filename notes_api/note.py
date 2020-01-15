@@ -3,10 +3,10 @@ import uuid
 import json
 
 class Note():
-    def __init__(self, title="", content="", tags=[], color="white",
+    def __init__(self, title="", content="", tags={}, color="white",
                  history=[]):
 
-        self.tags = tags
+        self.tags = set(tags)
         self.color = color
 
         self._title = title
@@ -16,12 +16,24 @@ class Note():
         self._version = 1
         self._id = uuid.uuid4().hex
 
+    def __eq__(self, note):
+        is_eq = self._title == note.title and \
+                self._content == note.content and \
+                set(self.tags) == set(note.tags) and \
+                self.color == note.color and \
+                self._history == note._history
+        return is_eq
+
+    def __ne__(self, note):
+        return not self.__eq__(note)
+
     @classmethod
-    def from_json(cls, note_json):
+    def from_json_string(cls, string):
         """
         Loads a note from a json-encoded string.
         """
-        note_ = json.JSONDecoder().decode(note_json)
+        note_ = json.JSONDecoder().decode(string)
+
         note = Note(note_["title"], note_["content"], note_["tags"],
                     note_["color"], note_["history"])
         note._id = note_["id"]
@@ -30,12 +42,22 @@ class Note():
         return note
 
     @classmethod
-    def from_encrypted_json(cls, file_name, encrypter):
+    def from_json_file(cls, file_name):
+        """
+        Loads a note from a json-encoded file.
+        """
+        with open(file_name) as file_:
+            note_ = file_.read()
+
+        return Note.from_json_string(note_)
+
+    @classmethod
+    def from_encrypted_json_file(cls, file_name, encrypter):
         """
         Loads a note from an encrypted json-encoded string.
         """
         decrypted = encrypter.decrypt(file_name)
-        return Note.from_json(decrypted)
+        return Note.from_json_string(decrypted)
 
     @property
     def title(self):
@@ -64,12 +86,10 @@ class Note():
                               "content": self._content})
 
     def add_tags(self, tags):
-        if isinstance(tags, list):
-            self.tags += tags
+        if isinstance(tags, list) or isinstance(tags, set):
+            self.tags = self.tags.union(set(tags))
         else:
-            self.tags.append(tags)
-
-        self.tags = list(set(self.tags)) # assert unicity of tags
+            self.tags.add(tags)
 
     def _increment_version(self):
         self._datetime = time.asctime()
@@ -81,7 +101,7 @@ class Note():
     def _to_object(self):
         note_object = {"title": self._title,
                      "content": self._content,
-                     "tags": self.tags,
+                     "tags": list(self.tags),
                      "datetime": self._datetime,
                      "version": self._version,
                      "color": self.color,
@@ -96,8 +116,21 @@ class Note():
     def save(self, encrypter=None):
         if encrypter is not None:
             to_save = encrypter.encrypt(self._to_json())
+            write_mode = "wb"
         else:
             to_save = json.JSONEncoder().encode(self._to_object())
+            write_mode = "w"
 
-        with open(self._id, "wb") as file_:
+        with open(self._id, write_mode) as file_:
             file_.write(to_save)
+
+    def duplicate(self):
+        note = Note(self._title, self._content, self.tags,
+                    self.color, self._history)
+        return note
+
+    # def backup_previous_version(self, version=0):
+    #     if version == 0: # default is the n-1 version
+    #         self.
+    #     pass
+
