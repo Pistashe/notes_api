@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import json
+import filecmp
 from cryptography.fernet import Fernet
 
 from notes_api.exceptions import DecryptionError
@@ -15,7 +16,8 @@ def _get_note():
     return note
 
 def _get_encrypter():
-    return EncrypterSymmetric(Fernet.generate_key())
+    return EncrypterSymmetric(b'gHsn9E3w20VBdcpTL-Yqic'\
+                              b'Cnwzam2gUK_warZprfv_M=')
 
 
 
@@ -131,9 +133,7 @@ def test_add_list_new_and_present_tag():
 def test_from_json_file():
     try:
         note = Note.from_file(os.path.join(DIR, "note_json"))
-        expected = Note("Test1", "Ceci est un test très simple qui ne fait "\
-                        "qu'afficher une note.", ["tag1", "tag2"],
-                        color="yellow")
+        expected = _get_note()
         assertion = note == expected
     except Exception as e:
         print(e)
@@ -144,12 +144,9 @@ def test_from_json_file():
 def test_from_encrypted_json_file_success():
     try:
         note_path = os.path.join(DIR, "note_json_encrypted")
-        encrypter = EncrypterSymmetric(b'gHsn9E3w20VBdcpTL-Yqic'\
-                                       b'Cnwzam2gUK_warZprfv_M=')
+        encrypter = _get_encrypter()
         note = Note.from_file(note_path, encrypter)
-        expected = Note("Test1", "Ceci est un test très simple qui ne fait "\
-                        "qu'afficher une note.", ["tag1", "tag2"],
-                        color="yellow")
+        expected = _get_note()
         assertion = note == expected
     except Exception as e:
         print(e)

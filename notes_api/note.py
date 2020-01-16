@@ -21,9 +21,9 @@ class Note():
     def __eq__(self, note):
         is_eq = self._title == note.title and \
                 self._content == note.content and \
-                set(self.tags) == set(note.tags) and \
-                self.color == note.color and \
-                self._history == note._history
+                self.tags == note.tags and \
+                self.color == note.color
+
         return is_eq
 
     def __ne__(self, note):

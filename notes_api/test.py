@@ -20,6 +20,14 @@ notebook = Notebook([note_1, note_2])
 # notebook.display(displayer)
 notebook.reorder([0, 1])
 notebook.display(displayer)
+note = Note("Test", "test", ["test"], color="yellow")
+encrypter = EncrypterSymmetric(b'gHsn9E3w20VBdcpTL-Yqic'\
+                               b'Cnwzam2gUK_warZprfv_M=')
+note_1 = Note("Test1", "Test1.", ["test1"], color="yellow")
+note_2 = Note("Test2", "Test2.", ["test2"], color="yellow")
+
+notebook = Notebook([note_1, note_2])
+notebook.save(encrypter)
 
 ## test sans crypto
 # note_1.save()
@@ -37,6 +45,6 @@ notebook.display(displayer)
 
 # test = Note.from_encrypted_json(note_1._id, encrypter=encrypter)
 # test.display(displayer)
-notebook.save()
-notebook2 = Notebook.from_archive("notebook_archive.tar")
-notebook2.display(displayer)
+# notebook.save()
+# notebook2 = Notebook.from_archive("notebook_archive.tar")
+# notebook2.display(displayer)

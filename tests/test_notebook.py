@@ -1,8 +1,17 @@
+import os
+import pathlib
+from cryptography.fernet import Fernet
+
 from notes_api.notebook import Notebook
 from notes_api.note import Note
 
+from notes_api.exceptions import DecryptionError
 from notes_api.displayers.displayer import Displayer
 from notes_api.synchronizers.synchronizer import Synchronizer
+from notes_api.encrypters.encrypter_symmetric import EncrypterSymmetric
+
+
+DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 def _get_notebook():
@@ -15,6 +24,9 @@ def _get_notebook():
 def _get_synchronizer():
     return Synchronizer()
 
+def _get_encrypter():
+    return EncrypterSymmetric(b'gHsn9E3w20VBdcpTL-Yqic'\
+                              b'Cnwzam2gUK_warZprfv_M=')
 
 def test_sync():
     try:
@@ -28,7 +40,7 @@ def test_sync():
         print(e)
         assertion = False
 
-    return assertion
+    assert assertion
 
 def test_reorder_success():
     try:
@@ -43,7 +55,7 @@ def test_reorder_success():
         print(e)
         assertion = False
 
-    return assertion
+    assert assertion
 
 def test_reorder_error():
     try:
@@ -56,7 +68,7 @@ def test_reorder_error():
         print(e)
         assertion = False
 
-    return assertion
+    assert assertion
 
 def test_add_one_note():
     try:
@@ -72,7 +84,7 @@ def test_add_one_note():
         print(e)
         assertion = False
 
-    return assertion
+    assert assertion
 
 def test_add_list_notes():
     try:
@@ -89,7 +101,7 @@ def test_add_list_notes():
         print(e)
         assertion = False
 
-    return assertion
+    assert assertion
 
 def test_remove_one_note():
     try:
@@ -103,7 +115,7 @@ def test_remove_one_note():
         print(e)
         assertion = False
 
-    return assertion
+    assert assertion
 
 def test_remove_list_notes():
     try:
@@ -116,7 +128,7 @@ def test_remove_list_notes():
         print(e)
         assertion = False
 
-    return assertion
+    assert assertion
 
 def test_display():
     try:
@@ -129,7 +141,7 @@ def test_display():
         print(e)
         assertion = False
 
-    return assertion
+    assert assertion
 
 def test__update_tags():
     try:
@@ -144,7 +156,7 @@ def test__update_tags():
         print(e)
         assertion = False
 
-    return assertion
+    assert assertion
 
 def test_set_notes():
     try:
@@ -159,4 +171,96 @@ def test_set_notes():
         print(e)
         assertion = False
 
-    return assertion
+    assert assertion
+
+def test_save_without_encryption_success():
+    try:
+        notebook = _get_notebook()
+        notebook.save()
+        archive_path = pathlib.Path("notebook_archive.tar")
+        assertion = archive_path.exists()
+    except Exception as e:
+        print(e)
+        assertion = False
+
+    assert assertion
+
+def test_save_without_encryption_success():
+    try:
+        notebook = _get_notebook()
+        notebook.save()
+        archive_path = pathlib.Path("./notebook_archive.tar")
+        assertion = archive_path.exists()
+        archive_path.unlink()
+    except Exception as e:
+        print(e)
+        assertion = False
+
+    assert assertion
+
+def test_save_with_encryption_success():
+    try:
+        notebook = _get_notebook()
+        encrypter = _get_encrypter()
+        notebook.save(encrypter)
+        archive_path = pathlib.Path("notebook_archive.tar")
+        assertion = archive_path.exists()
+        archive_path.unlink()
+    except Exception as e:
+        print(e)
+        assertion = False
+
+    assert assertion
+
+def test_from_archive_success():
+    try:
+        archive_path = os.path.join(DIR, "notebook_archive.tar")
+        notebook = Notebook.from_archive(archive_path)
+        expected = _get_notebook()
+        assertion = notebook == expected
+    except Exception as e:
+        print(e)
+        assertion = False
+
+    assert assertion
+
+def test_from_archive_error_nonexisting():
+    try:
+        archive_path = os.path.join(DIR, "notebook_archive_nonexisting.tar")
+        notebook = Notebook.from_archive(archive_path)
+        assertion = False
+    except FileNotFoundError:
+        assertion = True
+    except Exception as e:
+        print(e)
+        assertion = False
+
+    assert assertion
+
+def test_from_encrypted_archive_success():
+    try:
+        archive_path = os.path.join(DIR, "notebook_archive_encrypted.tar")
+        encrypter = _get_encrypter()
+        notebook = Notebook.from_archive(archive_path, encrypter)
+        expected = _get_notebook()
+        assertion = notebook == expected
+    except Exception as e:
+        print(e)
+        assertion = False
+
+    assert assertion
+
+def test_from_encrypted_archive_success():
+    try:
+        archive_path = os.path.join(DIR, "notebook_archive_encrypted.tar")
+        encrypter = EncrypterSymmetric(b'GHsn9E3w20VBdcpTL-Yqic'\
+                                       b'Cnwzam2gUK_warZprfv_M=')
+        notebook = Notebook.from_archive(archive_path, encrypter)
+        assertion = False
+    except DecryptionError:
+        assertion = True
+    except Exception as e:
+        print(e)
+        assertion = False
+
+    assert assertion

@@ -5,6 +5,8 @@ import shutil
 from notes_api.exceptions import DecryptionError
 from notes_api.note import Note
 
+CWD = os.getcwd()
+
 class Notebook():
     def __init__(self, notes=[]):
         self._notes = notes
@@ -38,6 +40,10 @@ class Notebook():
             shutil.rmtree("tmp_archive")
         except shutil.ReadError:
             raise FileNotFoundError("Archive not found.")
+        except DecryptionError as e:
+            os.chdir(CWD)
+            shutil.rmtree("tmp_archive")
+            raise e
 
         return Notebook(notes)
 
