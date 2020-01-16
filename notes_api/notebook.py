@@ -1,3 +1,10 @@
+import os
+import json
+import shutil
+
+from notes_api.exceptions import DecryptionError
+from notes_api.note import Note
+
 class Notebook():
     def __init__(self, notes=[]):
         self._notes = notes
@@ -16,6 +23,23 @@ class Notebook():
 
     def __ne__(self, notebook):
         return not self.__eq__(notebook)
+
+    @classmethod
+    def from_archive(self, archive_path, encrypter=None):
+        try:
+            shutil.unpack_archive(archive_path, "tmp_archive/")
+            os.chdir("tmp_archive")
+            with open("notebook_infos.json") as file_:
+                notebook_infos = json.load(file_)
+
+            notes = [Note.from_file(id_, encrypter) \
+                     for id_ in notebook_infos["order"]]
+            os.chdir("../")
+            shutil.rmtree("tmp_archive")
+        except shutil.ReadError:
+            raise FileNotFoundError("Archive not found.")
+
+        return Notebook(notes)
 
     @property
     def notes(self):
@@ -65,3 +89,18 @@ class Notebook():
     def display(self, displayer):
         for note in self._notes:
             note.display(displayer)
+
+    def save(self, encrypter=None):
+        os.mkdir("tmp_archive")
+        os.chdir("tmp_archive")
+
+        notebook_infos = {"order": [note._id for note in self._notes]}
+        with open("notebook_infos.json", "w") as file_:
+            json.dump(notebook_infos, file_)
+
+        for note in self._notes:
+            note.save(encrypter=encrypter)
+
+        os.chdir("../")
+        shutil.make_archive("notebook_archive", "tar", "tmp_archive")
+        shutil.rmtree("tmp_archive")

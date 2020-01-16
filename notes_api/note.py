@@ -2,6 +2,8 @@ import time
 import uuid
 import json
 
+from notes_api.exceptions import DecryptionError
+
 class Note():
     def __init__(self, title="", content="", tags={}, color="white",
                  history=[]):
@@ -28,7 +30,21 @@ class Note():
         return not self.__eq__(note)
 
     @classmethod
-    def from_json_string(cls, string):
+    def from_file(cls, file_name, encrypter=None):
+        """
+        Loads a note from a json_encoded file.
+        """
+        if encrypter is None:
+            with open(file_name) as file_:
+                note_ = file_.read()
+        else:
+            note_ = encrypter.decrypt(file_name)
+
+        return Note._from_json_string(note_)
+
+
+    @classmethod
+    def _from_json_string(cls, string):
         """
         Loads a note from a json-encoded string.
         """
@@ -41,23 +57,23 @@ class Note():
         note._version = note_["version"]
         return note
 
-    @classmethod
-    def from_json_file(cls, file_name):
-        """
-        Loads a note from a json-encoded file.
-        """
-        with open(file_name) as file_:
-            note_ = file_.read()
+    # @classmethod
+    # def _from_json_file(cls, file_name):
+    #     """
+    #     Loads a note from a json-encoded file.
+    #     """
+    #     with open(file_name) as file_:
+    #         note_ = file_.read()
 
-        return Note.from_json_string(note_)
+    #     return Note.from_json_string(note_)
 
-    @classmethod
-    def from_encrypted_json_file(cls, file_name, encrypter):
-        """
-        Loads a note from an encrypted json-encoded string.
-        """
-        decrypted = encrypter.decrypt(file_name)
-        return Note.from_json_string(decrypted)
+    # @classmethod
+    # def _from_encrypted_json_file(cls, file_name, encrypter):
+    #     """
+    #     Loads a note from an encrypted json-encoded string.
+    #     """
+    #     decrypted = encrypter.decrypt(file_name)
+    #     return Note.from_json_string(decrypted)
 
     @property
     def title(self):
