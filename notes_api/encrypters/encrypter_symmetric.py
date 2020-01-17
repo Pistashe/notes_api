@@ -6,19 +6,17 @@ from notes_api.exceptions import DecryptionError
 
 class EncrypterSymmetric(Encrypter):
 
-    def encrypt(self, note_json):
+    def encrypt(self, clear_message):
         encrypter = Fernet(self.key)
-        encrypted = encrypter.encrypt(note_json.encode())
+        encrypted = encrypter.encrypt(clear_message.encode())
         return encrypted
 
 
-    def decrypt(self, file_name):
+    def decrypt(self, cipher_message):
         decrypter = Fernet(self.key)
-        with open(file_name, "rb") as file_:
-            encrypted = file_.read()
 
         try:
-            decrypted = decrypter.decrypt(encrypted).decode()
+            decrypted = decrypter.decrypt(cipher_message).decode()
         except InvalidToken:
             raise DecryptionError("The key used to decrypt is not correct.")
 

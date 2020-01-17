@@ -34,11 +34,12 @@ class Note():
         """
         Loads a note from a json_encoded file.
         """
-        if encrypter is None:
-            with open(file_name) as file_:
-                note_ = file_.read()
-        else:
-            note_ = encrypter.decrypt(file_name)
+        read_mode = "r" if encrypter is None else "rb"
+        with open(file_name, read_mode) as file_:
+            note_ = file_.read()
+
+        if encrypter is not None:
+            note_ = encrypter.decrypt(note_)
 
         return Note._from_json_string(note_)
 
@@ -56,24 +57,6 @@ class Note():
         note._datetime = note_["datetime"]
         note._version = note_["version"]
         return note
-
-    # @classmethod
-    # def _from_json_file(cls, file_name):
-    #     """
-    #     Loads a note from a json-encoded file.
-    #     """
-    #     with open(file_name) as file_:
-    #         note_ = file_.read()
-
-    #     return Note.from_json_string(note_)
-
-    # @classmethod
-    # def _from_encrypted_json_file(cls, file_name, encrypter):
-    #     """
-    #     Loads a note from an encrypted json-encoded string.
-    #     """
-    #     decrypted = encrypter.decrypt(file_name)
-    #     return Note.from_json_string(decrypted)
 
     @property
     def title(self):
