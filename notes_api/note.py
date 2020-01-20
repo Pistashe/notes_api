@@ -99,13 +99,13 @@ class Note():
 
     def _to_object(self):
         note_object = {"title": self._title,
-                     "content": self._content,
-                     "tags": list(self.tags),
-                     "datetime": self._datetime,
-                     "version": self._version,
-                     "color": self.color,
-                     "id": self._id,
-                     "history": self._history}
+                       "content": self._content,
+                       "tags": list(self.tags),
+                       "datetime": self._datetime,
+                       "version": self._version,
+                       "color": self.color,
+                       "id": self._id,
+                       "history": self._history}
         return note_object
 
     def _to_json(self):
@@ -114,11 +114,11 @@ class Note():
 
     def save(self, encrypter=None):
         if encrypter is not None:
-            to_save = encrypter.encrypt(self._to_json())
             write_mode = "wb"
+            to_save = encrypter.encrypt(self._to_json())
         else:
-            to_save = json.JSONEncoder().encode(self._to_object())
             write_mode = "w"
+            to_save = json.JSONEncoder().encode(self._to_object())
 
         with open(self._id, write_mode) as file_:
             file_.write(to_save)

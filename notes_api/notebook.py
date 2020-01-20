@@ -14,14 +14,14 @@ class Notebook():
         self._update_tags()
 
     def __eq__(self, notebook):
-        try:
-            is_eq = True
-            for i, _ in enumerate(self._notes):
-                is_eq = is_eq and (self._notes[i] == notebook._notes[i])
-        except IndexError:
-            is_eq = False
+        if len(self._notes) != len(notebook._notes):
+            return False
 
-        return is_eq
+        for i, _ in enumerate(self._notes):
+            if self._notes[i] != notebook._notes[i]:
+                return False
+
+        return True
 
     def __ne__(self, notebook):
         return not self.__eq__(notebook)
@@ -36,14 +36,11 @@ class Notebook():
 
             notes = [Note.from_file(id_, encrypter) \
                      for id_ in notebook_infos["order"]]
-            os.chdir("../")
-            shutil.rmtree("tmp_archive")
-        except shutil.ReadError:
+        except (shutil.ReadError, FileNotFoundError):
             raise FileNotFoundError("Archive not found.")
-        except DecryptionError as e:
-            os.chdir(CWD)
-            shutil.rmtree("tmp_archive")
-            raise e
+        finally:
+            os.chdir("../")
+            shutil.rmtree("tmp_archive", ignore_errors=True)
 
         return Notebook(notes)
 
@@ -109,4 +106,5 @@ class Notebook():
 
         os.chdir("../")
         shutil.make_archive("notebook_archive", "tar", "tmp_archive")
+        print("ok")
         shutil.rmtree("tmp_archive")

@@ -7,14 +7,14 @@ class Encrypter():
         self.key = key
 
 
-    def encrypt(self, file_name):
+    def encrypt(self, string):
         """
         Encrypts a file
         """
         raise NotImplementedError("The encrypt function has not been "\
                                   "implemented.")
 
-    def decrypt(self, file_name):
+    def decrypt(self, string):
         """
         Decrypts a file
         """

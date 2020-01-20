@@ -8,7 +8,8 @@ from notes_api.note import Note
 from notes_api.exceptions import DecryptionError
 from notes_api.displayers.displayer import Displayer
 from notes_api.synchronizers.synchronizer import Synchronizer
-from notes_api.encrypters.encrypter_symmetric import EncrypterSymmetric
+from notes_api.encrypters.encrypter import Encrypter
+# from notes_api.encrypters.encrypter_symmetric import EncrypterSymmetric
 
 
 DIR = os.path.abspath(os.path.dirname(__file__))
@@ -25,8 +26,9 @@ def _get_synchronizer():
     return Synchronizer()
 
 def _get_encrypter():
-    return EncrypterSymmetric(b'gHsn9E3w20VBdcpTL-Yqic'\
-                              b'Cnwzam2gUK_warZprfv_M=')
+    return Encrypter("test")
+    # return EncrypterSymmetric(b'gHsn9E3w20VBdcpTL-Yqic'\
+    #                           b'Cnwzam2gUK_warZprfv_M=')
 
 def test_sync():
     try:
@@ -203,9 +205,12 @@ def test_save_with_encryption_success():
         notebook = _get_notebook()
         encrypter = _get_encrypter()
         notebook.save(encrypter)
-        archive_path = pathlib.Path("notebook_archive.tar")
-        assertion = archive_path.exists()
-        archive_path.unlink()
+        assertion = False
+    except NotImplementedError:
+        assertion = True
+        # archive_path = pathlib.Path("notebook_archive.tar")
+        # assertion = archive_path.exists()
+        # archive_path.unlink()
     except Exception as e:
         print(e)
         assertion = False
@@ -242,23 +247,75 @@ def test_from_encrypted_archive_success():
         archive_path = os.path.join(DIR, "notebook_archive_encrypted.tar")
         encrypter = _get_encrypter()
         notebook = Notebook.from_archive(archive_path, encrypter)
-        expected = _get_notebook()
-        assertion = notebook == expected
+        # expected = _get_notebook()
+        # assertion = notebook == expected
+        assertion = False
+    except NotImplementedError:
+        assertion = True
     except Exception as e:
         print(e)
         assertion = False
 
     assert assertion
 
-def test_from_encrypted_archive_success():
+# def test_from_encrypted_archive_error_decryption():
+#     try:
+#         archive_path = os.path.join(DIR, "notebook_archive_encrypted.tar")
+#         encrypter = EncrypterSymmetric(b'GHsn9E3w20VBdcpTL-Yqic'\
+#                                        b'Cnwzam2gUK_warZprfv_M=')
+#         notebook = Notebook.from_archive(archive_path, encrypter)
+#         assertion = False
+#     except DecryptionError:
+#         assertion = True
+#     except Exception as e:
+#         print(e)
+#         assertion = False
+
+#     assert assertion
+
+def test_is_eq_success():
     try:
-        archive_path = os.path.join(DIR, "notebook_archive_encrypted.tar")
-        encrypter = EncrypterSymmetric(b'GHsn9E3w20VBdcpTL-Yqic'\
-                                       b'Cnwzam2gUK_warZprfv_M=')
-        notebook = Notebook.from_archive(archive_path, encrypter)
+        notebook_1 = _get_notebook()
+        notebook_2 = _get_notebook()
+        assertion = notebook_1 == notebook_2
+    except Exception as e:
+        print(e)
         assertion = False
-    except DecryptionError:
-        assertion = True
+
+    assert assertion
+
+def test_is_eq_error_index():
+    try:
+        notebook_1 = _get_notebook()
+        notebook_2 = _get_notebook()
+        note_3 = Note("Test3", "Test3.", ["test3"], color="yellow")
+        notebook_2.add_notes(note_3)
+        assertion = notebook_1 != notebook_2
+    except Exception as e:
+        print(e)
+        assertion = False
+
+    assert assertion
+
+def test_is_eq_error_order():
+    try:
+        notebook_1 = _get_notebook()
+        notebook_2 = _get_notebook()
+        notebook_2.reorder([0, 1])
+        assertion = notebook_1 != notebook_2
+    except Exception as e:
+        print(e)
+        assertion = False
+
+    assert assertion
+
+def test_get_notes():
+    try:
+        notebook_1 = _get_notebook()
+        result = notebook_1.notes
+        expected = [Note("Test1", "Test1.", ["test1"], color="yellow"),
+                    Note("Test2", "Test2.", ["test2"], color="yellow")]
+        assertion = result == expected
     except Exception as e:
         print(e)
         assertion = False
