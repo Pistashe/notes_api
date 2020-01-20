@@ -106,5 +106,4 @@ class Notebook():
 
         os.chdir("../")
         shutil.make_archive("notebook_archive", "tar", "tmp_archive")
-        print("ok")
         shutil.rmtree("tmp_archive")

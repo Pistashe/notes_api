@@ -1,19 +1,17 @@
 import nacl.utils
 from nacl.public import PrivateKey, Box
-# from cryptography.hazmat.backends import default_backend
-# from cryptography.hazmat.primitives import serialization, hashes
-# from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
 from .encrypter import Encrypter
 
+from notes_api.exceptions import DecryptionError
 
 class EncrypterAsymmetric(Encrypter):
 
     def __init__(self, private_key=None, public_key=None):
         if private_key is None:
-            private_key = PrivateKey.generate()
+            private_key = PrivateKey.generate()._private_key
 
-        self.private_key = private_key
+        self.private_key = PrivateKey(private_key)
         if public_key is None:
             self._public_key = public_key
         else:
@@ -42,12 +40,16 @@ class EncrypterAsymmetric(Encrypter):
     #         )
     #     return EncrypterAsymmetric(private_key)
 
-    def encrypt(self, clear_message):
-        encrypted = self._box.encrypt(clear_message.encode())
+    def encrypt(self, clear_message, nonce=None):
+        encrypted = self._box.encrypt(clear_message.encode(), nonce=nonce)
         return encrypted
 
     def decrypt(self, cipher_message):
-        decrypted = self._box.decrypt(cipher_message).decode()
+        try:
+            decrypted = self._box.decrypt(cipher_message).decode()
+        except nacl.exceptions.CryptoError:
+            raise DecryptionError("The key used to decrypt is not correct.")
+
         return decrypted
 
     # def save_private_key(self, file_name):

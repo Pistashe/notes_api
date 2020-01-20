@@ -16,10 +16,7 @@ class EncrypterSymmetric(Encrypter):
 
 
     def encrypt(self, clear_message, nonce=None):
-        if nonce is None:
-            encrypted = self._box.encrypt(clear_message.encode())
-        else:
-            encrypted = self._box.encrypt(clear_message.encode(), nonce)
+        encrypted = self._box.encrypt(clear_message.encode(), nonce=nonce)
 
         return encrypted
 
