@@ -4,8 +4,12 @@ import json
 
 from notes_api.exceptions import DecryptionError
 
-class Note():
-    def __init__(self, title="", content="", tags={}, color="white",
+# from .note_plain import NotePlain
+# from .note_tick import NoteTick
+
+
+class NoteInterface():
+    def __init__(self, title="", content=None, tags={}, color="white",
                  history=[]):
 
         self.tags = set(tags)
@@ -17,6 +21,7 @@ class Note():
         self._datetime = time.asctime()
         self._version = 1
         self._id = uuid.uuid4().hex
+        self._type = None
 
     def __eq__(self, note):
         is_eq = self._title == note.title and \
@@ -49,14 +54,22 @@ class Note():
         """
         Loads a note from a json-encoded string.
         """
-        note_ = json.JSONDecoder().decode(string)
+        raise NotImplementedError("_from_json_string method not implemented.")
+        # note_ = json.JSONDecoder().decode(string)
 
-        note = Note(note_["title"], note_["content"], note_["tags"],
-                    note_["color"], note_["history"])
-        note._id = note_["id"]
-        note._datetime = note_["datetime"]
-        note._version = note_["version"]
-        return note
+        # if note_["type"] == "tick":
+        #     from .note_tick import NoteTick
+        #     note = NoteTick(note_["title"], note_["content"], note_["tags"],
+        #                     note_["color"], note_["history"])
+        # else:
+        #     from .note_plain import NotePlain
+        #     note = NotePlain(note_["title"], note_["content"], note_["tags"],
+        #                      note_["color"], note_["history"])
+
+        # note._id = note_["id"]
+        # note._datetime = note_["datetime"]
+        # note._version = note_["version"]
+        # return note
 
     @property
     def title(self):
@@ -105,7 +118,8 @@ class Note():
                        "version": self._version,
                        "color": self.color,
                        "id": self._id,
-                       "history": self._history}
+                       "history": self._history,
+                       "type": self._type}
         return note_object
 
     def _to_json(self):
@@ -124,9 +138,17 @@ class Note():
             file_.write(to_save)
 
     def duplicate(self):
-        note = Note(self._title, self._content, self.tags,
-                    self.color, self._history)
-        return note
+        raise NotImplementedError("duplicate method not implemented.")
+        # if self._type == "tick":
+        #     from .note_tick import NoteTick
+        #     note = NoteTick(self._title, self._content, self.tags,
+        #                     self.color, self._history)
+        # else:
+        #     from .note_plain import NotePlain
+        #     note = NotePlain(self._title, self._content, self.tags,
+        #                      self.color, self._history)
+
+        # return note
 
     # def backup_previous_version(self, version=0):
     #     if version == 0: # default is the n-1 version

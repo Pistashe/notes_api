@@ -3,7 +3,7 @@ import pathlib
 from cryptography.fernet import Fernet
 
 from notes_api.notebook import Notebook
-from notes_api.note import Note
+from notes_api.notes.note import Note
 
 from notes_api.exceptions import DecryptionError
 from notes_api.displayers.displayer import Displayer

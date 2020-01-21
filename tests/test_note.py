@@ -5,7 +5,7 @@ import filecmp
 from cryptography.fernet import Fernet
 
 from notes_api.exceptions import DecryptionError
-from notes_api.note import Note
+from notes_api.notes.note import Note
 from notes_api.displayers.displayer import Displayer
 from notes_api.encrypters.encrypter import Encrypter
 # from notes_api.encrypters.encrypter_symmetric import EncrypterSymmetric

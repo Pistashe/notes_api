@@ -3,7 +3,7 @@ import json
 import shutil
 
 from notes_api.exceptions import DecryptionError
-from notes_api.note import Note
+from notes_api.notes.note import Note
 
 CWD = os.getcwd()
 
