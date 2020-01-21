@@ -3,7 +3,7 @@ import json
 import shutil
 
 from notes_api.exceptions import DecryptionError
-from notes_api.notes.note import Note
+from notes_api.notes.note_loader import NoteLoader
 
 CWD = os.getcwd()
 
@@ -34,7 +34,8 @@ class Notebook():
             with open("notebook_infos.json") as file_:
                 notebook_infos = json.load(file_)
 
-            notes = [Note.from_file(id_, encrypter) \
+            loader = NoteLoader()
+            notes = [loader.load_from_json(id_, encrypter) \
                      for id_ in notebook_infos["order"]]
         except (shutil.ReadError, FileNotFoundError):
             raise FileNotFoundError("Archive not found.")

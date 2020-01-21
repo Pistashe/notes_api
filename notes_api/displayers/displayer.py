@@ -12,6 +12,8 @@ class Displayer():
             self._display_tick_note(note)
         elif note._type == "plain":
             self._display_plain_note(note)
+        else:
+            raise TypeError("Unrecognized note type.")
 
     def _display_plain_note(self, note):
         """

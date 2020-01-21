@@ -18,8 +18,6 @@ def _get_note():
 
 def _get_encrypter():
     return Encrypter("test")
-    # return EncrypterSymmetric(b'gHsn9E3w20VBdcpTL-Yqic'\
-    #                           b'Cnwzam2gUK_warZprfv_M=')
 
 
 def test_duplicate_success():
@@ -65,9 +63,6 @@ def test_save_with_encrypter_success():
         encrypter = _get_encrypter()
         note.save(encrypter=encrypter)
         assertion = False
-        # note_path = Path("./{}".format(note._id))
-        # assertion = note_path.exists()
-        # note_path.unlink()
     except NotImplementedError:
         assertion = True
     except Exception as e:
@@ -82,7 +77,7 @@ def test_display():
         displayer = Displayer()
         note.display(displayer)
         assertion = False
-    except NotImplementedError:
+    except TypeError:
         assertion = True
     except Exception as e:
         print(e)
@@ -134,32 +129,32 @@ def test_add_list_new_and_present_tag():
 
     assert assertion
 
-def test_from_json_file():
-    try:
-        note = Note.from_file(os.path.join(DIR, "note_json"))
-        expected = _get_note()
-        assertion = note == expected
-    except Exception as e:
-        print(e)
-        assertion = False
+# def test_from_json_file():
+#     try:
+#         note = Note.from_file(os.path.join(DIR, "note_json"))
+#         expected = _get_note()
+#         assertion = note == expected
+#     except Exception as e:
+#         print(e)
+#         assertion = False
 
-    assert assertion
+#     assert assertion
 
-def test_from_encrypted_json_file_success():
-    try:
-        note_path = os.path.join(DIR, "note_json_encrypted")
-        encrypter = _get_encrypter()
-        note = Note.from_file(note_path, encrypter)
-        # expected = _get_note()
-        # assertion = note == expected
-        assertion = False
-    except NotImplementedError:
-        assertion = True
-    except Exception as e:
-        print(e)
-        assertion = False
+# def test_from_encrypted_json_file_success():
+#     try:
+#         note_path = os.path.join(DIR, "note_json_encrypted")
+#         encrypter = _get_encrypter()
+#         note = Note.from_file(note_path, encrypter)
+#         # expected = _get_note()
+#         # assertion = note == expected
+#         assertion = False
+#     except NotImplementedError:
+#         assertion = True
+#     except Exception as e:
+#         print(e)
+#         assertion = False
 
-    assert assertion
+#     assert assertion
 
 # def test_from_encrypted_json_file_error_key():
 #     try:
@@ -174,7 +169,7 @@ def test_from_encrypted_json_file_success():
 #         print(e)
 #         assertion = False
 
-    assert assertion
+    # assert assertion
 
 def test_set_title():
     note = _get_note()
