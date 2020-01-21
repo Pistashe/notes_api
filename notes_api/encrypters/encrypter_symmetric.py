@@ -1,5 +1,4 @@
-import nacl.secret
-import nacl.utils
+import nacl.utils, nacl.secret, nacl.exceptions
 
 from .encrypter import Encrypter
 
@@ -13,7 +12,6 @@ class EncrypterSymmetric(Encrypter):
 
         self.private_key = private_key
         self._box = nacl.secret.SecretBox(self.private_key)
-
 
     def encrypt(self, clear_message, nonce=None):
         encrypted = self._box.encrypt(clear_message.encode(), nonce=nonce)
