@@ -1,4 +1,5 @@
 from notes_api.notes.note_tick import NoteTick
+from notes_api.notes.note_plain import NotePlain
 
 
 def _get_note():
@@ -95,3 +96,15 @@ def test_sort_by_ticked_success():
 
     assert assertion
 
+def test_to_plain_success():
+    try:
+        note = _get_note()
+        result = note.to_plain()
+        expected = NotePlain("Test", "Test1\nTest2\nTest3",
+                             ["test"], color="yellow")
+        assertion = result == expected
+    except Exception as e:
+        print(e)
+        assertion = False
+
+    assert assertion

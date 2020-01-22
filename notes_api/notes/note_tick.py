@@ -28,3 +28,12 @@ class NoteTick(Note):
             sorted_content = list(reversed(sorted_content))
 
         self.content = sorted_content
+
+    def to_plain(self):
+        from .note_plain import NotePlain
+        content = "\n".join([item["text"] for item in self._content])
+        note = NotePlain(self._title, content, self.tags, self.color,
+                         self._history)
+        note._id = self._id
+        note._version = self._version + 1
+        return note

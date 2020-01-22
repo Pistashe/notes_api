@@ -176,18 +176,6 @@ def test_save_without_encryption_success():
     try:
         notebook = _get_notebook()
         notebook.save()
-        archive_path = pathlib.Path("notebook_archive.tar")
-        assertion = archive_path.exists()
-    except Exception as e:
-        print(e)
-        assertion = False
-
-    assert assertion
-
-def test_save_without_encryption_success():
-    try:
-        notebook = _get_notebook()
-        notebook.save()
         archive_path = pathlib.Path("./notebook_archive.tar")
         assertion = archive_path.exists()
         archive_path.unlink()
