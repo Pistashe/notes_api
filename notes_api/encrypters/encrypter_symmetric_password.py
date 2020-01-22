@@ -10,7 +10,7 @@ class EncrypterSymmetricPassword(EncrypterSymmetric):
         try:
             with open(salt, "rb") as salt_file:
                 self.salt = salt_file.read()
-        except TypeError:
+        except (TypeError, ValueError):
             self.salt = nacl.utils.random(nacl.pwhash.argon2i.SALTBYTES)
         except FileNotFoundError:
             if isinstance(salt, bytes):

@@ -4,7 +4,7 @@ import uuid
 from .note import Note
 
 class NoteTick(Note):
-    def __init__(self, title="", content="", tags={}, color="white",
+    def __init__(self, title="", content=[], tags={}, color="white",
                  history=[]):
         Note.__init__(self, title, content, tags, color, history)
         self._type = "tick"
